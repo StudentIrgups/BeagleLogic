@@ -77,20 +77,22 @@ License
 
 11. echo "beaglelogic" | sudo tee /etc/modules-load.d/beaglelogic.conf
 
-12. sudo tee /etc/systemd/system/beaglelogic-setup.service << 'EOF'
+12. 
+sudo tee /etc/systemd/system/beaglelogic-setup.service << 'EOF'
 [Unit]
-Description=Configure BeagleLogic pins and DMA buffer
+Description=Allocate BeagleLogic DMA buffer
 After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'for p in P8_45 P8_46 P8_43 P8_44 P8_41 P8_42 P8_39 P8_40 P8_27 P8_29 P8_28 P8_30; do config-pin $p pruin; done; echo 134217728 > /sys/devices/virtual/misc/beaglelogic/memalloc'
+ExecStart=/bin/bash -c 'echo 134217728 > /sys/devices/virtual/misc/beaglelogic/memalloc && chmod 666 /dev/beaglelogic'
 RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-
 sudo systemctl daemon-reload
 sudo systemctl enable beaglelogic-setup.service
+
+sudo apt install -y sigrok-cli

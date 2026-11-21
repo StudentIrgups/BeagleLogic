@@ -6,7 +6,33 @@
         part-number = "BEAGLELOGIC";
         version = "00A0";
 
-        fragment@0 {
+        fragment@0  { target = <&P8_45_default_pin>; __overlay__ { pinctrl-single,pins = <0x0a0 0x26>; }; };
+        fragment@1  { target = <&P8_46_default_pin>; __overlay__ { pinctrl-single,pins = <0x0a4 0x26>; }; };
+        fragment@2  { target = <&P8_43_default_pin>; __overlay__ { pinctrl-single,pins = <0x0a8 0x26>; }; };
+        fragment@3  { target = <&P8_44_default_pin>; __overlay__ { pinctrl-single,pins = <0x0ac 0x26>; }; };
+        fragment@4  { target = <&P8_41_default_pin>; __overlay__ { pinctrl-single,pins = <0x0b0 0x26>; }; };
+        fragment@5  { target = <&P8_42_default_pin>; __overlay__ { pinctrl-single,pins = <0x0b4 0x26>; }; };
+        fragment@6  { target = <&P8_39_default_pin>; __overlay__ { pinctrl-single,pins = <0x0b8 0x26>; }; };
+        fragment@7  { target = <&P8_40_default_pin>; __overlay__ { pinctrl-single,pins = <0x0bc 0x26>; }; };
+        fragment@8  { target = <&P8_27_default_pin>; __overlay__ { pinctrl-single,pins = <0x0e0 0x26>; }; };
+        fragment@9  { target = <&P8_29_default_pin>; __overlay__ { pinctrl-single,pins = <0x0e4 0x26>; }; };
+        fragment@10 { target = <&P8_28_default_pin>; __overlay__ { pinctrl-single,pins = <0x0e8 0x26>; }; };
+        fragment@11 { target = <&P8_30_default_pin>; __overlay__ { pinctrl-single,pins = <0x0ec 0x26>; }; };
+
+        fragment@12 { target = <&P8_45_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0a0 0x26>; }; };
+        fragment@13 { target = <&P8_46_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0a4 0x26>; }; };
+        fragment@14 { target = <&P8_43_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0a8 0x26>; }; };
+        fragment@15 { target = <&P8_44_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0ac 0x26>; }; };
+        fragment@16 { target = <&P8_41_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0b0 0x26>; }; };
+        fragment@17 { target = <&P8_42_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0b4 0x26>; }; };
+        fragment@18 { target = <&P8_39_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0b8 0x26>; }; };
+        fragment@19 { target = <&P8_40_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0bc 0x26>; }; };
+        fragment@20 { target = <&P8_27_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0e0 0x26>; }; };
+        fragment@21 { target = <&P8_29_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0e4 0x26>; }; };
+        fragment@22 { target = <&P8_28_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0e8 0x26>; }; };
+        fragment@23 { target = <&P8_30_pruin_pin>; __overlay__ { pinctrl-single,pins = <0x0ec 0x26>; }; };
+
+        fragment@24 {
                 target-path = "/";
                 __overlay__ {
                         pru-beaglelogic {
