@@ -90,3 +90,7 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target
 EOF
+
+
+sudo systemctl daemon-reload
+sudo systemctl enable beaglelogic-setup.service
