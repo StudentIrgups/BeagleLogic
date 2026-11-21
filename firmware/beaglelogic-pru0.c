@@ -128,6 +128,34 @@ extern void run(struct capture_context *ctx, uint32_t trigger_flags);
 int main(void) {
 	/* Enable OCP Master Port */
 	CT_CFG.SYSCFG_bit.STANDBY_INIT = 0;
+
+    /* Настройка маршрутизации INTC (замена resource_table_0.h для ядра 5.10) */
+    CT_INTC.CMR4_bit.CH_MAP_16 = 2; /* SYSEV_PRU0_TO_ARM (16) -> Channel 2 */
+    CT_INTC.CMR4_bit.CH_MAP_17 = 0; /* SYSEV_ARM_TO_PRU0 (17) -> Channel 0 */
+    CT_INTC.CMR5_bit.CH_MAP_20 = 0; /* SYSEV_PRU1_TO_PRU0 (20) -> Channel 0 */
+    CT_INTC.CMR5_bit.CH_MAP_22 = 4; /* SYSEV_PRU0_TO_ARM_A (22) -> Channel 4 */
+    CT_INTC.CMR5_bit.CH_MAP_23 = 1; /* SYSEV_ARM_TO_PRU0_A (23) -> Channel 1 */
+    CT_INTC.CMR6_bit.CH_MAP_24 = 5; /* SYSEV_PRU0_TO_ARM_B (24) -> Channel 5 */
+
+    CT_INTC.HMR0_bit.HINT_MAP_0 = 0; /* Channel 0 -> Host 0 (R31 бит 30 на PRU0) */
+    CT_INTC.HMR0_bit.HINT_MAP_1 = 1; /* Channel 1 -> Host 1 */
+    CT_INTC.HMR0_bit.HINT_MAP_2 = 2; /* Channel 2 -> Host 2 */
+    CT_INTC.HMR1_bit.HINT_MAP_4 = 4; /* Channel 4 -> Host 4 */
+    CT_INTC.HMR1_bit.HINT_MAP_5 = 5; /* Channel 5 -> Host 5 */
+
+    CT_INTC.EISR = 16;
+    CT_INTC.EISR = 17;
+    CT_INTC.EISR = 20;
+    CT_INTC.EISR = 22;
+    CT_INTC.EISR = 23;
+    CT_INTC.EISR = 24;
+
+    CT_INTC.HIEISR = 0;
+    CT_INTC.HIEISR = 1;
+    CT_INTC.HIEISR = 2;
+    CT_INTC.HIEISR = 4;
+    CT_INTC.HIEISR = 5;
+    CT_INTC.GER = 1;
 	cxt.magic = FW_MAGIC;
 
 	/* Clear all interrupts */

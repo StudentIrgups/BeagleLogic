@@ -442,7 +442,7 @@ static int beaglelogic_send_cmd(struct beaglelogicdev *bldev, uint32_t cmd)
 static void beaglelogic_request_stop(struct beaglelogicdev *bldev)
 {
 	/* Trigger interrupt */
-	pruss_intc_trigger(bldev->to_bl_irq);
+	irq_set_irqchip_state(bldev->to_bl_irq, IRQCHIP_STATE_PENDING, true);
 }
 
 /* This is [to be] called from a threaded IRQ handler */
@@ -845,18 +845,21 @@ unsigned int beaglelogic_f_poll(struct file *filp,
 		struct poll_table_struct *tbl)
 {
 	struct logic_buffer_reader *reader = filp->private_data;
-	struct beaglelogicdev *bldev = reader->bldev;
+	struct beaglelogicdev *bldev;
 	struct logic_buffer *buf;
 
-	/* Raise an error if polled without starting the LA first */
-	if (reader->buf == NULL && bldev->state != STATE_BL_RUNNING)
-		return -ENOEXEC;
+	if (!reader || !reader->bldev)
+		return EPOLLERR;
+
+	bldev = reader->bldev;
+	poll_wait(filp, &bldev->wait, tbl);
 
 	buf = reader->buf;
+	if (!buf)
+		return 0;
+
 	if (buf->state == STATE_BL_BUF_UNMAPPED)
 		return (POLLIN | POLLRDNORM);
-
-	poll_wait(filp, &bldev->wait, tbl);
 
 	return 0;
 }
@@ -1202,7 +1205,7 @@ static int beaglelogic_probe(struct platform_device *pdev)
 	/* Get a handle to the PRUSS structures */
 	dev = &pdev->dev;
 
-	bldev->pru0 = pru_rproc_get(node, PRUSS_PRU0);
+	bldev->pru0 = pru_rproc_get(node, PRUSS_PRU0, NULL);
 	if (IS_ERR(bldev->pru0)) {
 		ret = PTR_ERR(bldev->pru0);
 		if (ret != -EPROBE_DEFER)
@@ -1218,7 +1221,7 @@ static int beaglelogic_probe(struct platform_device *pdev)
 		goto fail_pru0_put;
 	}
 
-	bldev->pru1 = pru_rproc_get(node, PRUSS_PRU1);
+	bldev->pru1 = pru_rproc_get(node, PRUSS_PRU1, NULL);
 	if (IS_ERR(bldev->pru1)) {
 		ret = PTR_ERR(bldev->pru1);
 		if (ret != -EPROBE_DEFER)
@@ -1292,6 +1295,7 @@ static int beaglelogic_probe(struct platform_device *pdev)
 
 	/* Once done, register our misc device and link our private data */
 	ret = misc_register(&bldev->miscdev);
+	if (!ret) dma_coerce_mask_and_coherent(bldev->miscdev.this_device, DMA_BIT_MASK(32));
 	if (ret)
 		goto fail_free_irqs;
 	dev = bldev->miscdev.this_device;
