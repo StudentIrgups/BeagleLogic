@@ -48,3 +48,45 @@ License
  * **Logo** : [Creative Commons Attribution-ShareAlike 4.0 International (CC-BY-SA-4.0)]
 (http://creativecommons.org/licenses/by-sa/4.0/)
 
+Сборка:
+
+1. sudo apt install -y linux-headers-$(uname -r) build-essential git device-tree-compiler \
+                    ti-pru-software-v6.0 ti-pru-cgt-v2.3
+
+### Go to /opt
+### git pull 
+### cd Beaglelogic/kernel
+2. sudo ln -sf /usr/lib/ti/pru-software-support-package-v6.0 /usr/lib/ti/pru-software-support-package
+
+3. make -C /lib/modules/$(uname -r)/build M=$(pwd) modules
+
+4. sudo make -C /lib/modules/$(uname -r)/build M=$(pwd) modules_install
+
+5. sudo depmod -a
+
+6. cd /opt/BeagleLogic/firmware
+
+7. make clean && make
+
+8. sudo cp release/beaglelogic-pru0.out /lib/firmware/beaglelogic-pru0-fw
+   sudo cp release/beaglelogic-pru1.out /lib/firmware/beaglelogic-pru1-fw
+
+9. dtc -O dtb -o /tmp/beaglelogic-00A0.dtbo -b 0 -@ /opt/BeagleLogic/kernel/beaglelogic-00A0.dts
+
+10. sudo cp /tmp/beaglelogic-00A0.dtbo /lib/firmware/beaglelogic-00A0.dtbo
+
+11. echo "beaglelogic" | sudo tee /etc/modules-load.d/beaglelogic.conf
+
+12. sudo tee /etc/systemd/system/beaglelogic-setup.service << 'EOF'
+[Unit]
+Description=Configure BeagleLogic pins and DMA buffer
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'for p in P8_45 P8_46 P8_43 P8_44 P8_41 P8_42 P8_39 P8_40 P8_27 P8_29 P8_28 P8_30; do config-pin $p pruin; done; echo 134217728 > /sys/devices/virtual/misc/beaglelogic/memalloc'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
